@@ -13,9 +13,9 @@ LICENSE_DB = {
     "34501-4814449-1": {"name": "Samar Abbas", "status": "Valid", "expiry": "2027-05-30"},
     "35201-1234567-8": {"name": "Ali Raza", "status": "Expired", "expiry": "2022-12-12"},
     "34602-6997069-9": {"name": "Abdul Rehman", "status": "Valid", "expiry": "2027-06-30"},
-    "34501-4814449-1": {"name": "Mahib Hussain", "status": "Valid", "expiry": "2027-05-30"},
-    "34501-4814449-1": {"name": "Awais Ali", "status": "Valid", "expiry": "2027-05-30"},
-    "34501-4814449-1": {"name": "Afsar", "status": "Expired", "expiry": "2027-05-30"},
+    "34501-4814449-2": {"name": "Mahib Hussain", "status": "Valid", "expiry": "2027-05-30"},
+    "34501-4814449-3": {"name": "Awais Ali", "status": "Valid", "expiry": "2027-05-30"},
+    "34501-4814449-4": {"name": "Afsar", "status": "Expired", "expiry": "2027-05-30"},
 }
 
 # Session state
