@@ -3,7 +3,7 @@
 This is a futuristic Streamlit-based app that allows real-time license verification by scanning CNIC via webcam using OCR.
 Try It Live
 
-👉 [Click here to try the app live on Streamlit](https://smart-license-verifier.streamlit.app)
+👉 [Click here to try the app live on Streamlit](https://smart-license-verifier-eh7awx6hppixnaegxfshsy.streamlit.app/)
 
 ## Features
 - OCR-based CNIC extraction
