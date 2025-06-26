@@ -5,10 +5,10 @@ import pytesseract
 import re
 from datetime import datetime, timedelta
 
-# Tesseract path
+# --- Tesseract path ---
 pytesseract.pytesseract.tesseract_cmd = r"C:\\Users\\PMLS\\Desktop\\Tesseract-OCR\\tesseract.exe"
 
-# Dummy license DB
+# --- Dummy license DB ---
 LICENSE_DB = {
     "34501-4814449-1": {"name": "Samar Abbas", "status": "Valid", "expiry": "2027-05-30"},
     "35201-1234567-8": {"name": "Ali Raza", "status": "Expired", "expiry": "2022-12-12"},
@@ -17,30 +17,26 @@ LICENSE_DB = {
     "34501-4814449-3": {"name": "Afsar", "status": "Expired", "expiry": "2027-05-30"},
 }
 
-# Session state
+# --- Streamlit Config ---
+st.set_page_config(page_title="Smart License Verifier", layout="centered", page_icon="🚦")
+
 if "scan_history" not in st.session_state:
     st.session_state.scan_history = []
 
-# Config
-st.set_page_config(page_title="Smart License Verifier", layout="centered", page_icon="🚦")
-
-# --- Styles ---
+# --- Custom Styles ---
 st.markdown("""
 <style>
 body {
     background-color: #0f1117;
-    font-family: 'Segoe UI', sans-serif;
 }
-
 .sidebar-box {
     background: rgba(0, 255, 255, 0.1);
     border: 2px solid #00ffe7;
     border-radius: 15px;
     box-shadow: 0 0 20px #00ffe7;
     padding: 20px;
-    max-width: 100%;
+    font-family: 'Orbitron', sans-serif;
 }
-
 .neon-badge {
     display: inline-block;
     background: linear-gradient(90deg, #00ffe7, #6a5acd);
@@ -49,7 +45,6 @@ body {
     border-radius: 20px;
     font-weight: bold;
 }
-
 .feature-box {
     background: #111827;
     border-left: 4px solid #00ffe7;
@@ -58,35 +53,30 @@ body {
     border-radius: 8px;
     animation: glow 2s infinite;
 }
-
 @keyframes glow {
     0% { box-shadow: 0 0 5px #00ffe7; }
     50% { box-shadow: 0 0 15px #00ffe7; }
     100% { box-shadow: 0 0 5px #00ffe7; }
 }
-
 .title-container {
     text-align: center;
     padding-top: 10px;
 }
-
 .title-text {
     color: #00ffe7;
     font-size: 36px;
     font-weight: bold;
+    font-family: 'Segoe UI', sans-serif;
     line-height: 1.2;
     margin: 0;
 }
-
 .align-block {
     display: inline-block;
     text-align: left;
 }
-
 .verification-line {
     padding-left: 75px;
 }
-
 .subtitle-text {
     font-size: 18px;
     color: #cccccc;
@@ -94,36 +84,18 @@ body {
     margin-bottom: 50px;
     padding-left: 35px;
 }
-
-@media only screen and (max-width: 600px) {
-    .title-text {
-        font-size: 26px;
-        line-height: 1.3;
-    }
-    .verification-line {
-        padding-left: 30px;
-    }
-    .subtitle-text {
-        font-size: 14px;
-        padding-left: 15px;
-        margin-bottom: 40px;
-    }
-    .sidebar-box, .feature-box {
-        font-size: 14px;
-    }
-}
 </style>
 """, unsafe_allow_html=True)
 
-# --- Sidebar ---
+# --- Sidebar Info ---
 st.sidebar.markdown("""
 <div class='sidebar-box'>
     <h3>📘 About the App</h3>
-    <p>This futuristic system enables real-time license verification by scanning the citizen's CNIC using a webcam.</p>
+    <p>This futuristic system enables real-time license verification by scanning the citizen's CNIC using a webcam or uploading CNIC image.</p>
     <ul>
         <li>🔍 OCR Extraction</li>
         <li>🕒 7-Day Grace Period</li>
-        <li>📷 Live Scan + Manual Entry</li>
+        <li>📷 CNIC Image Upload</li>
         <li>📄 Scan History</li>
         <li>✨ Futuristic UI</li>
     </ul>
@@ -146,25 +118,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- Webcam capture ---
-def capture_image():
-    cap = cv2.VideoCapture(0)
-    st.info("📸 Press 's' to snap. Press 'q' to quit.")
-    while True:
-        ret, frame = cap.read()
-        cv2.imshow("Webcam View", frame)
-        key = cv2.waitKey(1)
-        if key & 0xFF == ord('s'):
-            cv2.imwrite("captured_cnic.jpg", frame)
-            cap.release()
-            cv2.destroyAllWindows()
-            return "captured_cnic.jpg"
-        elif key & 0xFF == ord('q'):
-            cap.release()
-            cv2.destroyAllWindows()
-            return None
-
-# --- OCR ---
+# --- OCR Function ---
 def extract_cnic(image_path):
     image = cv2.imread(image_path)
     image = cv2.resize(image, None, fx=1.5, fy=1.5)
@@ -176,31 +130,41 @@ def extract_cnic(image_path):
     match = re.search(r'\d{5}-\d{7}-\d', text)
     return match.group() if match else None
 
-# --- Grace period calculator ---
+# --- Grace Period Helper ---
 def grace_expiry():
     return (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d")
 
-# --- CNIC Scan via webcam ---
-st.subheader("📸 CNIC Scanning via Webcam")
-if st.button("📷 Start Live Scan"):
-    path = capture_image()
-    if path:
-        cnic = extract_cnic(path)
+# --- Upload CNIC Image (Mobile Friendly) ---
+st.subheader("📸 Upload CNIC Image")
+uploaded_file = st.file_uploader("Upload an image of the CNIC (JPG or PNG)", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    with open("uploaded_cnic.jpg", "wb") as f:
+        f.write(uploaded_file.read())
+    with st.spinner("🔍 Extracting CNIC number..."):
+        cnic = extract_cnic("uploaded_cnic.jpg")
         if cnic:
             st.success(f"✅ CNIC Detected: `{cnic}`")
+            st.session_state.scan_history.append((cnic, datetime.now().strftime("%Y-%m-%d %H:%M")))
+            if cnic in LICENSE_DB:
+                info = LICENSE_DB[cnic]
+                badge = "🟢 Valid" if info["status"] == "Valid" else "🔴 Expired"
+                st.markdown(f"### 👤 Name: `{info['name']}`")
+                st.markdown(f"### 🧾 Status: <span class='neon-badge'>{badge}</span>", unsafe_allow_html=True)
+                st.markdown(f"### 📅 Expiry Date: `{info['expiry']}`")
+                if info["status"] != "Valid":
+                    st.warning(f"⚠️ License expired. Grace Period Active till **{grace_expiry()}**.")
+            else:
+                st.error("❌ No license found. Grace period initiated.")
+                st.markdown(f"📅 **Grace Valid Until:** `{grace_expiry()}`")
         else:
-            st.error("❌ Failed to detect CNIC.")
-    else:
-        st.info("❗ Scan canceled.")
+            st.error("❌ CNIC number could not be detected. Try a clearer image.")
 
-# Space between sections
+# --- Manual CNIC Entry ---
 st.markdown("<div style='margin-top: 40px;'></div>", unsafe_allow_html=True)
-
-# --- Manual Entry ---
 st.subheader("✏️ Or Enter CNIC Manually")
 manual_cnic = st.text_input("Enter CNIC Number (xxxxx-xxxxxxx-x)")
 
-# --- License Lookup ---
 if st.button("🔍 Verify CNIC"):
     cnic_number = manual_cnic.strip()
     st.session_state.scan_history.append((cnic_number, datetime.now().strftime("%Y-%m-%d %H:%M")))
@@ -217,10 +181,10 @@ if st.button("🔍 Verify CNIC"):
         st.error("❌ No license found. Grace period initiated.")
         st.markdown(f"📅 **Grace Valid Until:** `{grace_expiry()}`")
 
-# --- History ---
+# --- Scan History ---
 if st.session_state.scan_history:
     st.markdown("### 🧾 CNIC Scan History")
-    for i, (val, dt) in enumerate(reversed(st.session_state.scan_history[-5:]), 1):
+    for val, dt in reversed(st.session_state.scan_history[-5:]):
         st.markdown(f"<div class='feature-box'>🔹 <b>{val}</b> — {dt}</div>", unsafe_allow_html=True)
 
 # --- Footer ---
