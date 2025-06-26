@@ -13,9 +13,8 @@ LICENSE_DB = {
     "34501-4814449-1": {"name": "Samar Abbas", "status": "Valid", "expiry": "2027-05-30"},
     "35201-1234567-8": {"name": "Ali Raza", "status": "Expired", "expiry": "2022-12-12"},
     "34602-6997069-9": {"name": "Abdul Rehman", "status": "Valid", "expiry": "2027-06-30"},
-    "34501-4814449-2": {"name": "Mahib Hussain", "status": "Valid", "expiry": "2027-05-30"},
-    "34501-4814449-3": {"name": "Awais Ali", "status": "Valid", "expiry": "2027-05-30"},
-    "34501-4814449-4": {"name": "Afsar", "status": "Expired", "expiry": "2027-05-30"},
+    "34501-4814449-2": {"name": "Awais Ali", "status": "Valid", "expiry": "2027-05-30"},
+    "34501-4814449-3": {"name": "Afsar", "status": "Expired", "expiry": "2027-05-30"},
 }
 
 # Session state
@@ -30,15 +29,18 @@ st.markdown("""
 <style>
 body {
     background-color: #0f1117;
+    font-family: 'Segoe UI', sans-serif;
 }
+
 .sidebar-box {
     background: rgba(0, 255, 255, 0.1);
     border: 2px solid #00ffe7;
     border-radius: 15px;
     box-shadow: 0 0 20px #00ffe7;
     padding: 20px;
-    font-family: 'Orbitron', sans-serif;
+    max-width: 100%;
 }
+
 .neon-badge {
     display: inline-block;
     background: linear-gradient(90deg, #00ffe7, #6a5acd);
@@ -47,6 +49,7 @@ body {
     border-radius: 20px;
     font-weight: bold;
 }
+
 .feature-box {
     background: #111827;
     border-left: 4px solid #00ffe7;
@@ -55,35 +58,13 @@ body {
     border-radius: 8px;
     animation: glow 2s infinite;
 }
+
 @keyframes glow {
     0% { box-shadow: 0 0 5px #00ffe7; }
     50% { box-shadow: 0 0 15px #00ffe7; }
     100% { box-shadow: 0 0 5px #00ffe7; }
 }
-</style>
-""", unsafe_allow_html=True)
 
-# --- Sidebar ---
-st.sidebar.markdown("""
-<div class='sidebar-box'>
-    <h3>📘 About the App</h3>
-    <p>
-        This futuristic system enables real-time license verification by scanning the citizen's CNIC using a webcam.
-    </p>
-    <ul>
-        <li>🔍 OCR Extraction</li>
-        <li>🕒 7-Day Grace Period</li>
-        <li>📷 Live Scan + Manual Entry</li>
-        <li>📄 Scan History</li>
-        <li>✨ Futuristic UI</li>
-    </ul>
-    <br>
-    <b>👨‍💻 Developer:</b> Samar Abbas<br>
-    <b>🎓 University:</b> University of Narowal
-</div>
-""", unsafe_allow_html=True)
-st.markdown("""
-<style>
 .title-container {
     text-align: center;
     padding-top: 10px;
@@ -93,7 +74,6 @@ st.markdown("""
     color: #00ffe7;
     font-size: 36px;
     font-weight: bold;
-    font-family: 'Segoe UI', sans-serif;
     line-height: 1.2;
     margin: 0;
 }
@@ -111,11 +91,50 @@ st.markdown("""
     font-size: 18px;
     color: #cccccc;
     margin-top: 10px;
-    margin-bottom: 50px; /* Increased bottom spacing here */
+    margin-bottom: 50px;
     padding-left: 35px;
 }
-</style>
 
+@media only screen and (max-width: 600px) {
+    .title-text {
+        font-size: 26px;
+        line-height: 1.3;
+    }
+    .verification-line {
+        padding-left: 30px;
+    }
+    .subtitle-text {
+        font-size: 14px;
+        padding-left: 15px;
+        margin-bottom: 40px;
+    }
+    .sidebar-box, .feature-box {
+        font-size: 14px;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
+# --- Sidebar ---
+st.sidebar.markdown("""
+<div class='sidebar-box'>
+    <h3>📘 About the App</h3>
+    <p>This futuristic system enables real-time license verification by scanning the citizen's CNIC using a webcam.</p>
+    <ul>
+        <li>🔍 OCR Extraction</li>
+        <li>🕒 7-Day Grace Period</li>
+        <li>📷 Live Scan + Manual Entry</li>
+        <li>📄 Scan History</li>
+        <li>✨ Futuristic UI</li>
+    </ul>
+    <br>
+    <b>👨‍💻 Developer:</b> Samar Abbas<br>
+    <b>🎓 University:</b> University of Narowal
+</div>
+""", unsafe_allow_html=True)
+
+# --- Title ---
+st.markdown("""
 <div class="title-container">
     <div class="align-block">
         <div class="title-text">🚦 Smart Traffic License</div>
@@ -126,12 +145,6 @@ st.markdown("""
     <p class="subtitle-text">Verify license via CNIC — with grace period logic and real-time detection.</p>
 </div>
 """, unsafe_allow_html=True)
-
-
-
-
-
-
 
 # --- Webcam capture ---
 def capture_image():
@@ -167,7 +180,7 @@ def extract_cnic(image_path):
 def grace_expiry():
     return (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d")
 
-# --- Scan via webcam ---
+# --- CNIC Scan via webcam ---
 st.subheader("📸 CNIC Scanning via Webcam")
 if st.button("📷 Start Live Scan"):
     path = capture_image()
@@ -180,10 +193,10 @@ if st.button("📷 Start Live Scan"):
     else:
         st.info("❗ Scan canceled.")
 
-# 🔽 This adds vertical spacing
+# Space between sections
 st.markdown("<div style='margin-top: 40px;'></div>", unsafe_allow_html=True)
 
-# Next section heading
+# --- Manual Entry ---
 st.subheader("✏️ Or Enter CNIC Manually")
 manual_cnic = st.text_input("Enter CNIC Number (xxxxx-xxxxxxx-x)")
 
@@ -198,7 +211,6 @@ if st.button("🔍 Verify CNIC"):
         st.markdown(f"### 👤 Name: `{info['name']}`")
         st.markdown(f"### 🧾 Status: <span class='neon-badge'>{badge}</span>", unsafe_allow_html=True)
         st.markdown(f"### 📅 Expiry Date: `{info['expiry']}`")
-
         if info["status"] != "Valid":
             st.warning(f"⚠️ License expired. Grace Period Active till **{grace_expiry()}**.")
     else:
