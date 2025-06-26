@@ -6,7 +6,7 @@ import re
 from datetime import datetime, timedelta
 
 # --- Tesseract path ---
-pytesseract.pytesseract.tesseract_cmd = r"C:\\Users\\PMLS\\Desktop\\Tesseract-OCR\\tesseract.exe"
+# pytesseract.pytesseract.tesseract_cmd = r"C:\\Users\\PMLS\\Desktop\\Tesseract-OCR\\tesseract.exe"
 
 # --- Dummy license DB ---
 LICENSE_DB = {
